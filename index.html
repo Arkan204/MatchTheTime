@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match The Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Mono:wght@500;700&family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <button id="rules-toggle" class="top-btn">Rules / ڕێنمایی</button>
+        <button id="lang-toggle" class="top-btn">EN / کوردی</button>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rules-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Game Rules</h2>
+            <div id="modal-rules-text" class="modal-rules"></div>
+            <button id="close-modal" class="mode-btn">Close / داخستن</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 id="main-title">MATCH THE TIME</h1>
+            <div class="mode-selector">
+                <button id="mode-blind" class="mode-btn active">Mode 1: Blind Target</button>
+                <button id="mode-visible" class="mode-btn">Mode 2: Visible Guess</button>
+                <button id="mode-relay" class="mode-btn">Mode 3: Team Relay</button>
+            </div>
+            <!-- Description removed for cleaner UI -->
+        </header>
+
+        <main class="timer-container" id="timer-box">
+            <div id="display-text" class="display-text">00:00:00</div>
+        </main>
+
+        <footer>
+            <p id="instruction-text" class="instruction blink">Press SPACE to Start</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
