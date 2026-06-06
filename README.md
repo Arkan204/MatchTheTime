@@ -2,7 +2,7 @@
 
 [![Play Now](https://img.shields.io/badge/Play_Now_🎮-match--the--time.vercel.app-22c55e?style=for-the-badge)](https://match-the-time.vercel.app/)
 
-**[👉 یاری بکە بەشێوەی ئۆنلاین لێرە کلیک بکە (Play Live)](https://match-the-time.vercel.app/)**
+**[👉 کلیک لێرە بکە بۆ یاریکردن](https://match-the-time.vercel.app/)**
 
 یارییەکی زۆر شاز و بەچێژ بۆ ئەو کاتانەی لەگەڵ هاوڕێکانت کۆدەبنەوە! تاقیکردنەوەی ئەوەیە بزانن کێ مێشکی کاتژمێری باشترە. یارییەکە بە دیزاینێکی دارک مۆدی نایاب و دەنگی تایبەت (Beeps) دروستکراوە.
 
