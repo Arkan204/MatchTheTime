@@ -95,6 +95,7 @@ h1 {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .mode-btn {
@@ -351,4 +352,124 @@ footer {
         -webkit-user-select: none;
         user-select: none;
     }
+}
+
+/* Split Screen Overlay (Mode 4 & 5) */
+.split-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    z-index: 2000;
+    transition: opacity 0.3s ease;
+    background-color: var(--bg-color);
+}
+
+.split-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+[dir="rtl"] .split-screen {
+    flex-direction: row-reverse;
+}
+
+.exit-split-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2010;
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--text-primary);
+    border: 1px solid var(--accent);
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-family: 'Vazirmatn', 'Inter', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--accent-glow);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.half-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.p1-side {
+    background: rgba(239, 68, 68, 0.05);
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.p2-side {
+    background: rgba(59, 130, 246, 0.05); /* Blue */
+}
+
+/* States */
+.half-screen.ready {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.half-screen.flashed-green {
+    background: var(--accent);
+    box-shadow: inset 0 0 100px var(--accent-glow);
+}
+
+.half-screen.flashed-red {
+    background: var(--danger);
+    box-shadow: inset 0 0 100px var(--danger-glow);
+}
+
+.half-screen.locked {
+    background: rgba(34, 197, 94, 0.2);
+    border: 2px solid var(--accent);
+}
+
+.half-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    pointer-events: none;
+    text-align: center;
+    padding: 1rem;
+}
+
+.half-time {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 1rem;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.half-time.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .split-screen {
+        flex-direction: column;
+    }
+    .p1-side {
+        border-right: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    .half-text { font-size: 1.8rem; }
+    .half-time { font-size: 3rem; }
 }
