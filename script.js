@@ -436,13 +436,25 @@ document.body.addEventListener('touchstart', (e) => {
     if (e.target.tagName.toLowerCase() === 'button' || e.target.closest('button') || e.target.closest('.modal-content')) return;
     if (!rulesModal.classList.contains('hidden')) return;
     
-    if (currentMode < 4) { e.preventDefault(); handleSpacebar(); }
-    else {
-        // Check touch X position for split screen
+    if (currentMode < 4) { 
+        e.preventDefault(); handleSpacebar(); 
+    } else {
+        // Allow mobile users to reset/reveal by tapping the screen
+        if (duelState === 'REVEALED' || duelState === 'STOPPED_HIDDEN') {
+            e.preventDefault();
+            handleSpacebar();
+            return;
+        }
+
         initAudio();
+        const isMobile = window.innerWidth <= 768;
         for (let i = 0; i < e.changedTouches.length; i++) {
             const touch = e.changedTouches[i];
-            if (touch.clientX < window.innerWidth / 2) handleP1Down();
+            let isP1;
+            if (isMobile) isP1 = touch.clientY < window.innerHeight / 2;
+            else isP1 = touch.clientX < window.innerWidth / 2;
+            
+            if (isP1) handleP1Down();
             else handleP2Down();
         }
     }
@@ -450,9 +462,14 @@ document.body.addEventListener('touchstart', (e) => {
 
 document.body.addEventListener('touchend', (e) => {
     if (currentMode >= 4) {
+        const isMobile = window.innerWidth <= 768;
         for (let i = 0; i < e.changedTouches.length; i++) {
             const touch = e.changedTouches[i];
-            if (touch.clientX < window.innerWidth / 2) handleP1Up();
+            let isP1;
+            if (isMobile) isP1 = touch.clientY < window.innerHeight / 2;
+            else isP1 = touch.clientX < window.innerWidth / 2;
+            
+            if (isP1) handleP1Up();
             else handleP2Up();
         }
     }
