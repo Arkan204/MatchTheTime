@@ -29,6 +29,7 @@ body {
     justify-content: center;
     overflow: hidden;
     background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    touch-action: manipulation;
 }
 
 .top-bar {
@@ -65,7 +66,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Adjusted for better centering without description */
+    justify-content: center; 
     gap: 3rem;
     height: 80vh;
     width: 100%;
@@ -183,7 +184,8 @@ h1 {
 
 footer {
     text-align: center;
-    height: 3rem;
+    height: auto;
+    min-height: 3rem;
 }
 
 .instruction {
@@ -294,10 +296,59 @@ footer {
     margin: 0 auto;
 }
 
+/* Mobile Controls - ONLY visible on touch screens */
+.mobile-controls {
+    display: none;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.mobile-btn {
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--accent);
+    padding: 1rem 1.5rem;
+    border-radius: 9999px;
+    font-family: 'Vazirmatn', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 0 15px var(--accent-glow);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-btn.mobile-danger {
+    border-color: var(--danger);
+    box-shadow: 0 0 15px var(--danger-glow);
+}
+
+.mobile-btn:active {
+    transform: scale(0.95);
+}
+
+/* Hide specific buttons when not needed */
+.mobile-btn.hidden {
+    display: none !important;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .display-text { font-size: 4rem; }
     .timer-container { padding: 3rem 1rem; }
     h1 { font-size: 1.8rem; }
     .mode-selector { flex-direction: column; gap: 0.5rem; }
+}
+
+@media (pointer: coarse) and (max-width: 768px) {
+    .mobile-controls {
+        display: flex;
+    }
+    
+    body {
+        -webkit-user-select: none;
+        user-select: none;
+    }
 }

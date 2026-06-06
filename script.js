@@ -14,16 +14,18 @@ const i18n = {
         close_btn: "Close",
         rules_btn: "Rules",
         lang_btn: "کوردی",
-        start: "Press SPACE to Start",
-        start_relay: "Press SPACE to Start Relay",
-        stop: "Press SPACE to Stop",
-        pause: "Press SPACE to Pause",
-        reveal: "Press SPACE to Reveal",
-        reset: "Press SPACE to Reset",
+        start: "Tap / Press SPACE to Start",
+        start_relay: "Tap / Press SPACE to Start Relay",
+        stop: "Tap / Press SPACE to Stop",
+        pause: "Tap / Press SPACE to Pause",
+        reveal: "Tap / Press SPACE to Reveal",
+        reset: "Tap / Press SPACE to Reset",
         reset_relay: "Press BACKSPACE to Reset",
-        next_player: "Next Player: Press SPACE. Or ENTER to Give Up/Reveal",
+        next_player: "Next Player: Tap / Press SPACE",
         timing: "TIMING...",
-        paused: "PAUSED"
+        paused: "PAUSED",
+        mob_reveal: "Give Up / Reveal",
+        mob_reset: "Reset Timer"
     },
     ku: {
         title: "کـاتـەکـە بـگـرە",
@@ -39,16 +41,18 @@ const i18n = {
         close_btn: "داخستن",
         rules_btn: "ڕێنمایی",
         lang_btn: "EN",
-        start: "SPACE دابگرە بۆ دەستپێکردن",
-        start_relay: "SPACE دابگرە بۆ شەڕە تیم!",
-        stop: "SPACE دابگرە بۆ وەستاندن",
-        pause: "SPACE دابگرە بۆ وەستاندن",
-        reveal: "SPACE دابگرە بۆ بینینی کاتەکە",
-        reset: "SPACE دابگرە بۆ سەرلەنوێ",
+        start: "SPACE یان شاشە دابگرە بۆ دەستپێکردن",
+        start_relay: "SPACE یان شاشە دابگرە بۆ شەڕە تیم!",
+        stop: "SPACE یان شاشە دابگرە بۆ وەستاندن",
+        pause: "SPACE یان شاشە دابگرە بۆ وەستاندن",
+        reveal: "SPACE یان شاشە دابگرە بۆ بینینی کاتەکە",
+        reset: "SPACE یان شاشە دابگرە بۆ سەرلەنوێ",
         reset_relay: "BACKSPACE دابگرە بۆ سفرکردنەوە",
-        next_player: "نۆرەی دواتر: SPACE، یان ENTER ئەگەر تەسلیم دەبن!",
+        next_player: "نۆرەی دواتر: SPACE یان شاشە دابگرە",
         timing: "دەڕوات...",
-        paused: "وەستا"
+        paused: "وەستا",
+        mob_reveal: "ئاشکراکردن",
+        mob_reset: "سفرکردنەوە"
     }
 };
 
@@ -79,6 +83,10 @@ const timerBox = document.getElementById('timer-box');
 const displayText = document.getElementById('display-text');
 const instructionText = document.getElementById('instruction-text');
 
+// Mobile Buttons
+const mobileRevealBtn = document.getElementById('mobile-reveal');
+const mobileResetBtn = document.getElementById('mobile-reset');
+
 // Initialize Language
 function applyLanguage() {
     const t = i18n[currentLang];
@@ -95,6 +103,9 @@ function applyLanguage() {
     modalTitle.textContent = t.rules_title;
     modalRulesText.innerHTML = t.rules_text;
     closeModalBtn.textContent = t.close_btn;
+    
+    mobileRevealBtn.textContent = t.mob_reveal;
+    mobileResetBtn.textContent = t.mob_reset;
 
     // Update Instruction Text based on state
     if (currentState === 'IDLE') {
@@ -173,6 +184,11 @@ function switchMode(mode, btn) {
     modeVisibleBtn.classList.remove('active');
     modeRelayBtn.classList.remove('active');
     btn.classList.add('active');
+    
+    // Manage mobile reveal button visibility
+    if (currentMode === 3) mobileRevealBtn.classList.remove('hidden');
+    else mobileRevealBtn.classList.add('hidden');
+
     applyLanguage(); 
     resetTimer();
 }
@@ -213,21 +229,14 @@ function resetTimer() {
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
 }
 
-// Main logic handler
-document.addEventListener('keydown', (e) => {
-    // Ignore space/enter if modal is open to prevent accidental triggers
-    if (!rulesModal.classList.contains('hidden')) return;
+// Action Handlers
+function handleBackspace() {
+    resetTimer();
+}
 
-    if (e.code === 'Backspace') {
-        e.preventDefault();
-        resetTimer();
-        return;
-    }
-
+function handleEnter() {
     const t = i18n[currentLang];
-
-    if (e.code === 'Enter' && currentMode === 3) {
-        e.preventDefault();
+    if (currentMode === 3) {
         initAudio();
         if (currentState === 'RUNNING' || currentState === 'STOPPED_HIDDEN') {
             if (currentState === 'RUNNING') {
@@ -241,78 +250,113 @@ document.addEventListener('keydown', (e) => {
             instructionText.textContent = t.reset_relay;
             instructionText.classList.add('blink');
         }
-        return;
     }
+}
 
-    if (e.code === 'Space') {
-        e.preventDefault(); 
-        initAudio(); 
+function handleSpacebar() {
+    initAudio(); 
+    const t = i18n[currentLang];
+    
+    if (currentState === 'IDLE') {
+        currentState = 'RUNNING';
+        startTime = performance.now();
+        playBeep('start');
         
-        if (currentState === 'IDLE') {
+        timerBox.className = "timer-container running";
+        instructionText.classList.remove('blink');
+        instructionText.textContent = currentMode === 3 ? t.pause : t.stop;
+        
+        if (currentMode === 1 || currentMode === 3) {
+            displayText.textContent = t.timing;
+        }
+        
+        updateTimer();
+        
+    } else if (currentState === 'RUNNING') {
+        const now = performance.now();
+        accumulatedTime += (now - startTime);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        playBeep('stop');
+        
+        timerBox.className = "timer-container stopped";
+        
+        if (currentMode === 1) {
+            currentState = 'STOPPED_HIDDEN';
+            displayText.textContent = t.paused;
+            instructionText.textContent = t.reveal;
+            instructionText.classList.add('blink');
+        } else if (currentMode === 3) {
+            currentState = 'STOPPED_HIDDEN';
+            displayText.textContent = t.paused;
+            instructionText.textContent = t.next_player;
+            instructionText.classList.add('blink');
+        } else {
+            currentState = 'REVEALED';
+            displayText.textContent = formatTime(accumulatedTime);
+            instructionText.textContent = t.reset;
+            instructionText.classList.add('blink');
+        }
+        
+    } else if (currentState === 'STOPPED_HIDDEN') {
+        if (currentMode === 1) {
+            currentState = 'REVEALED';
+            playBeep('reveal');
+            timerBox.className = "timer-container revealed";
+            displayText.textContent = formatTime(accumulatedTime);
+            instructionText.textContent = t.reset;
+        } else if (currentMode === 3) {
             currentState = 'RUNNING';
             startTime = performance.now();
             playBeep('start');
             
             timerBox.className = "timer-container running";
             instructionText.classList.remove('blink');
-            instructionText.textContent = currentMode === 3 ? t.pause : t.stop;
-            
-            if (currentMode === 1 || currentMode === 3) {
-                displayText.textContent = t.timing;
-            }
-            
+            instructionText.textContent = t.pause;
+            displayText.textContent = t.timing;
             updateTimer();
-            
-        } else if (currentState === 'RUNNING') {
-            const now = performance.now();
-            accumulatedTime += (now - startTime);
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            playBeep('stop');
-            
-            timerBox.className = "timer-container stopped";
-            
-            if (currentMode === 1) {
-                currentState = 'STOPPED_HIDDEN';
-                displayText.textContent = t.paused;
-                instructionText.textContent = t.reveal;
-                instructionText.classList.add('blink');
-            } else if (currentMode === 3) {
-                currentState = 'STOPPED_HIDDEN';
-                displayText.textContent = t.paused;
-                instructionText.textContent = t.next_player;
-                instructionText.classList.add('blink');
-            } else {
-                currentState = 'REVEALED';
-                displayText.textContent = formatTime(accumulatedTime);
-                instructionText.textContent = t.reset;
-                instructionText.classList.add('blink');
-            }
-            
-        } else if (currentState === 'STOPPED_HIDDEN') {
-            if (currentMode === 1) {
-                currentState = 'REVEALED';
-                playBeep('reveal');
-                timerBox.className = "timer-container revealed";
-                displayText.textContent = formatTime(accumulatedTime);
-                instructionText.textContent = t.reset;
-            } else if (currentMode === 3) {
-                currentState = 'RUNNING';
-                startTime = performance.now();
-                playBeep('start');
-                
-                timerBox.className = "timer-container running";
-                instructionText.classList.remove('blink');
-                instructionText.textContent = t.pause;
-                displayText.textContent = t.timing;
-                updateTimer();
-            }
-        } else if (currentState === 'REVEALED') {
-            if (currentMode !== 3) {
-                resetTimer();
-            }
         }
+    } else if (currentState === 'REVEALED') {
+        if (currentMode !== 3) {
+            resetTimer();
+        }
+    }
+}
+
+// Keyboard Bindings
+document.addEventListener('keydown', (e) => {
+    if (!rulesModal.classList.contains('hidden')) return;
+
+    if (e.code === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+    } else if (e.code === 'Enter') {
+        e.preventDefault();
+        handleEnter();
+    } else if (e.code === 'Space') {
+        e.preventDefault(); 
+        handleSpacebar();
     }
 });
 
+// Mobile Touch Bindings
+document.body.addEventListener('touchstart', (e) => {
+    // Ignore if tapping a button or modal content
+    if (e.target.tagName.toLowerCase() === 'button' || e.target.closest('button') || e.target.closest('.modal-content')) {
+        return;
+    }
+    if (!rulesModal.classList.contains('hidden')) return;
+    
+    // Treat any other tap on screen exactly like pressing Spacebar
+    handleSpacebar();
+});
+
+mobileRevealBtn.addEventListener('click', (e) => {
+    handleEnter();
+});
+
+mobileResetBtn.addEventListener('click', (e) => {
+    handleBackspace();
+});
+
 // Init on load
-applyLanguage();
+switchMode(1, modeBlindBtn);

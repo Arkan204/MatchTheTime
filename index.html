@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Match The Time</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +32,6 @@
                 <button id="mode-visible" class="mode-btn">Mode 2: Visible Guess</button>
                 <button id="mode-relay" class="mode-btn">Mode 3: Team Relay</button>
             </div>
-            <!-- Description removed for cleaner UI -->
         </header>
 
         <main class="timer-container" id="timer-box">
@@ -41,6 +40,10 @@
 
         <footer>
             <p id="instruction-text" class="instruction blink">Press SPACE to Start</p>
+            <div id="mobile-controls" class="mobile-controls">
+                <button id="mobile-reveal" class="mobile-btn">Reveal</button>
+                <button id="mobile-reset" class="mobile-btn mobile-danger">Reset</button>
+            </div>
         </footer>
     </div>
     <script src="script.js"></script>
